@@ -9,9 +9,13 @@ from config import db, bcrypt
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users_table'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, nullable = False, unique = True)
-    email = db.Column(db.String)
+    name = db.Column(db.String, nullable = False, unique = True)
     _password_hash = db.Column(db.String, nullable=False)
+    admin = db.Column(db.Boolean)
+
+    # foreign keys
+    household_id = db.Column(db.Integer, db.ForeignKey("household_table.id"))
+
 
 
     @hybrid_property
