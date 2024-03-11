@@ -87,15 +87,14 @@ class Goals(db.Model, SerializerMixin):
     deadline = db.Column(db.String, nullable=False)
 
     #foreign keys
-    user_id = db.Column(db.String, db.Foreignkey("user_table.id"))
-    household_id = db.Column(db.String, db.Foreignkey("household_table.id"))
+    user_id = db.Column(db.Integer, db.Foreignkey("user_table.id"))
+    household_id = db.Column(db.Integer, db.Foreignkey("household_table.id"))
 
 class MonthlyExpenses(db.Model, SerializerMixin):
     # using specific table names for now
     __tablename__ = 'monthly_expenses_table'
 
-    # both foreign and primary?
-    id = db.Column(db.Integer, db.Foreignkey("expense_item_table.monthly_expenses_id"), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     is_household_budget = db.Column(db.Boolean, nullable=False)
     user_expected_income = db.Column(db.String, nullable=False)
     actual_income = db.Column(db.String, nullable=False)
@@ -103,8 +102,8 @@ class MonthlyExpenses(db.Model, SerializerMixin):
     is_fluctuating_income = db.Column(db.Boolean, nullable=False)
 
     #foreign keys
-    user_id = db.Column(db.String, db.Foreignkey("user_table.id"))
-    household_id = db.Column(db.String, db.Foreignkey("household_table.id"))
+    user_id = db.Column(db.Integer, db.Foreignkey("user_table.id"))
+    household_id = db.Column(db.Integer, db.Foreignkey("household_table.id"))
 
 class ExpenseItem(db.Model, SerializerMixin):
      # using specific table names for now
