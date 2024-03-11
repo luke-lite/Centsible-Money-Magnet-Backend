@@ -105,3 +105,16 @@ class MonthlyExpenses(db.Model, SerializerMixin):
     #foreign keys
     user_id = db.Column(db.String, db.Foreignkey("user_table.id"))
     household_id = db.Column(db.String, db.Foreignkey("household_table.id"))
+
+class ExpenseItem(db.Model, SerializerMixin):
+     # using specific table names for now
+    __tablename__ = 'expense_item_table'
+
+    id = db.Column(db.Integer, primary_key=True)
+    item_name = db.Column(db.String, nullable=False)
+    item_desc = db.Column(db.String)
+    planned_amount = db.Column(db.Integer, nullable=False)
+
+    #foreign keys
+    monthly_expenses_id = db.Column(db.Integer, db.Foreignkey("monthly_expenses_table.id"))
+    category_id = db.Column(db.Integer, db.Foreignkey("category_table.id"))
