@@ -6,8 +6,15 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from config import db, bcrypt
 
+class Household(db.Model, SerializerMixin):
+    # using specific table names for now
+    __tablename__ = 'household_table'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+
 class User(db.Model, SerializerMixin):
-    # using illicit table names for now
+    # using specific table names for now
     __tablename__ = 'users_table'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable = False, unique = True)
@@ -15,7 +22,7 @@ class User(db.Model, SerializerMixin):
     admin = db.Column(db.Boolean)
 
     # foreign keys
-    # household_id = db.Column(db.Integer, db.ForeignKey("household_table.id"))
+    household_id = db.Column(db.Integer, db.ForeignKey("household_table.id"))
 
 
 
@@ -35,7 +42,7 @@ class User(db.Model, SerializerMixin):
             self._password_hash, password.encode('utf-8'))
     
 class Bank(db.Model, SerializerMixin):
-    # using illicit table names for now
+    # using specific table names for now
     __tablename__ = 'bank_table'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -48,7 +55,7 @@ class Bank(db.Model, SerializerMixin):
 
 
 class Transactions(db.Model, SerializerMixin):
-    # using illicit table names for now
+    # using specific table names for now
     __tablename__ = 'transactions_table'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -59,7 +66,7 @@ class Transactions(db.Model, SerializerMixin):
     category_id = db.Column(db.Integer, db.ForeignKey("category_table.id"))
 
 class Categories(db.Model, SerializerMixin):
-    # using illicit table names for now
+    # using specific table names for now
     __tablename__ = 'category_table'
 
     id = db.Column(db.Integer, primary_key=True)
