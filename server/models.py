@@ -92,7 +92,6 @@ class Goals(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey("users_table.id"))
     household_id = db.Column(db.Integer, db.ForeignKey("household_table.id"))
 
-
 class MonthlyExpenses(db.Model, SerializerMixin):
     # using specific table names for now
     __tablename__ = 'monthly_expenses_table'
@@ -108,9 +107,8 @@ class MonthlyExpenses(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey("users_table.id"))
     household_id = db.Column(db.Integer, db.ForeignKey("household_table.id"))
 
-
 class ExpenseItem(db.Model, SerializerMixin):
-    # using specific table names for now
+     # using specific table names for now
     __tablename__ = 'expense_item_table'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -118,6 +116,6 @@ class ExpenseItem(db.Model, SerializerMixin):
     item_desc = db.Column(db.String)
     planned_amount = db.Column(db.Integer, nullable=False)
 
-    # foreign keys
+      # foreign keys
     monthly_expenses_id = db.Column(db.Integer, db.ForeignKey("monthly_expenses_table.id"))
     category_id = db.Column(db.Integer, db.ForeignKey("category_table.id"))
