@@ -14,8 +14,10 @@ class Household(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
 
     # relationships
-    goals = db.relationship('Goals', back_populates = 'household', cascade = 'all, delete-orphan')
-    monthly_expenses = db.relationship('MonthlyExpenses', back_populates = 'household', cascade = 'all, delete-orphan')
+    goals = db.relationship(
+        'Goals', back_populates='household', cascade='all, delete-orphan')
+    monthly_expenses = db.relationship(
+        'MonthlyExpenses', back_populates='household', cascade='all, delete-orphan')
 
     # serialize rule
     serialize_rules = ['-goals.household', '-monthly_expenses.household']
@@ -36,9 +38,13 @@ class User(db.Model, SerializerMixin):
     household_id = db.Column(db.Integer, db.ForeignKey("household_table.id"))
 
     # relationships
-    banks = db.relationship('Bank', back_populates = 'user', cascade = 'all, delete-orphan')
-    goals = db.relationship('Goals', back_populates = 'user', cascade = 'all, delete-orphan')
-    monthly_expenses = db.relationship('MonthlyExpenses', back_populates = 'user', cascade = 'all, delete-orphan')
+    banks = db.relationship('Bank', back_populates='user',
+                            cascade='all, delete-orphan')
+    goals = db.relationship('Goals', back_populates='user',
+                            cascade='all, delete-orphan')
+    monthly_expenses = db.relationship('MonthlyExpenses', back_populates='user',
+                            cascade='all, delete-orphan')
+
 
     # serialize rule
     serialize_rules = ['-banks.user', '-goals.user', '-monthly_expenses.user']
@@ -61,6 +67,9 @@ class User(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<User {self.id}>'
 
+    def __repr__(self):
+        return f'<User {self.id}>'
+
 
 class Bank(db.Model, SerializerMixin):
     # using specific table names for now
@@ -75,8 +84,8 @@ class Bank(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey("users_table.id"))
 
     # relationships
-    user = db.relationship('User', back_populates = 'banks')
-    transactions = db.relationship('Transactions', back_populates = 'bank')
+    user = db.relationship('User', back_populates='banks')
+    transactions = db.relationship('Transactions', back_populates='bank')
 
     # serialize rule
     serialize_rules = ['-user.banks', '-transactions.bank']
@@ -97,8 +106,9 @@ class Transactions(db.Model, SerializerMixin):
     category_id = db.Column(db.Integer, db.ForeignKey("category_table.id"))
 
     # relationships
-    bank = db.relationship('Bank', back_populates = 'transactions')
-    category = db.relationship('Categories', back_populates = 'transaction')
+    bank = db.relationship('Bank', back_populates='transactions')
+    category = db.relationship('Categories', back_populates='transaction')
+
 
     # serialize rule
     serialize_rules = ['-bank.transactions', '-category.transaction']
@@ -117,8 +127,10 @@ class Categories(db.Model, SerializerMixin):
     category_type = db.Column(db.Boolean, nullable=False)
 
     # relationships
-    transaction = db.relationship('Transactions', back_populates = 'category', cascade = 'all, delete-orphan')
-    expense_items = db.relationship('ExpenseItem', back_populates = 'category', cascade = 'all, delete-orphan')
+    transaction = db.relationship(
+        'Transactions', back_populates='category', cascade='all, delete-orphan')
+    expense_items = db.relationship(
+        'ExpenseItem', back_populates='category', cascade='all, delete-orphan')
 
     # serialize rule
     serialize_rules = ['-transaction.category', '-expense_items.category']
@@ -144,8 +156,8 @@ class Goals(db.Model, SerializerMixin):
     household_id = db.Column(db.Integer, db.ForeignKey("household_table.id"))
 
     # relationships
-    user = db.relationship('User', back_populates = 'goals')
-    household = db.relationship('Household', back_populates = 'goals')
+    user = db.relationship('User', back_populates='goals')
+    household = db.relationship('Household', back_populates='goals')
 
     # serialize rule
     serialize_rules = ['-user.goals', '-household.goals']
@@ -153,6 +165,7 @@ class Goals(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Goals {self.id}>'
 
+      
 class MonthlyExpenses(db.Model, SerializerMixin):
     # using specific table names for now
     __tablename__ = 'monthly_expenses_table'
@@ -169,18 +182,22 @@ class MonthlyExpenses(db.Model, SerializerMixin):
     household_id = db.Column(db.Integer, db.ForeignKey("household_table.id"))
 
     # relationships
-    user = db.relationship('User', back_populates = 'monthly_expenses')
-    household = db.relationship('Household', back_populates = 'monthly_expenses')
-    expense_items = db.relationship('ExpenseItem', back_populates = 'monthly_expenses', cascade = 'all, delete-orphan')
+    user = db.relationship('User', back_populates='monthly_expenses')
+    household = db.relationship('Household', back_populates='monthly_expenses')
+    expense_items = db.relationship('ExpenseItem', back_populates='monthly_expenses',
+                                    cascade='all, delete-orphan')
 
     # serialize rule
-    serialize_rules = ['-user.monthly_expenses', '-household.monthly_expenses', '-expense_items.monthly_expenses']
+    serialize_rules = ['-user.monthly_expenses',
+                       '-household.monthly_expenses',
+                       '-expense_items.monthly_expenses']
 
     def __repr__(self):
         return f'<Monthly Expenses {self.id}>'
 
+
 class ExpenseItem(db.Model, SerializerMixin):
-     # using specific table names for now
+    # using specific table names for now
     __tablename__ = 'expense_item_table'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -189,15 +206,18 @@ class ExpenseItem(db.Model, SerializerMixin):
     planned_amount = db.Column(db.Integer, nullable=False)
 
     # foreign keys
-    monthly_expenses_id = db.Column(db.Integer, db.ForeignKey("monthly_expenses_table.id"))
+    monthly_expenses_id = db.Column(
+        db.Integer, db.ForeignKey("monthly_expenses_table.id"))
     category_id = db.Column(db.Integer, db.ForeignKey("category_table.id"))
 
     # relationships
-    monthly_expenses = db.relationship('MonthlyExpenses', back_populates = 'expense_items')
-    category = db.relationship('Categories', back_populates = 'expense_items')
+    monthly_expenses = db.relationship(
+        'MonthlyExpenses', back_populates='expense_items')
+    category = db.relationship('Categories', back_populates='expense_items')
 
     # serialize rule
-    serialize_rules = ['-monthly_expenses.expense_items', '-category.expense_items']
+    serialize_rules = ['-monthly_expenses.expense_items',
+                       '-category.expense_items']
 
     def __repr__(self):
         return f'<Expense Item {self.id}>'
