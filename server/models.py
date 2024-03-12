@@ -68,6 +68,8 @@ class Bank(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     public_token = db.Column(db.String, nullable=False, unique=True)
+    link_token = db.Column(db.String, nullable=False, unique=True)
+    persistent_token = db.Column(db.String, nullable=False, unique=True)
     bank_name = db.Column(db.String, nullable=False)
     account_type = db.Column(db.String, nullable=False)
 
