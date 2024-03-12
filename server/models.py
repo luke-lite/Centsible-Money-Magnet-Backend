@@ -42,8 +42,9 @@ class User(db.Model, SerializerMixin):
                             cascade='all, delete-orphan')
     goals = db.relationship('Goals', back_populates='user',
                             cascade='all, delete-orphan')
-    monthly_expenses = db.relationship(
-        'MonthlyExpenses', back_populates='user', cascade='all, delete-orphan')
+    monthly_expenses = db.relationship('MonthlyExpenses', back_populates='user',
+                            cascade='all, delete-orphan')
+
 
     # serialize rule
     serialize_rules = ['-banks.user', '-goals.user', '-monthly_expenses.user']
@@ -62,6 +63,9 @@ class User(db.Model, SerializerMixin):
     def authenticate(self, password):
         return bcrypt.check_password_hash(
             self._password_hash, password.encode('utf-8'))
+    
+    def __repr__(self):
+        return f'<User {self.id}>'
 
     def __repr__(self):
         return f'<User {self.id}>'
@@ -104,6 +108,7 @@ class Transactions(db.Model, SerializerMixin):
     # relationships
     bank = db.relationship('Bank', back_populates='transactions')
     category = db.relationship('Categories', back_populates='transaction')
+
 
     # serialize rule
     serialize_rules = ['-bank.transactions', '-category.transaction']
@@ -160,7 +165,7 @@ class Goals(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Goals {self.id}>'
 
-
+      
 class MonthlyExpenses(db.Model, SerializerMixin):
     # using specific table names for now
     __tablename__ = 'monthly_expenses_table'
@@ -179,12 +184,13 @@ class MonthlyExpenses(db.Model, SerializerMixin):
     # relationships
     user = db.relationship('User', back_populates='monthly_expenses')
     household = db.relationship('Household', back_populates='monthly_expenses')
-    expense_items = db.relationship(
-        'ExpenseItem', back_populates='monthly_expenses', cascade='all, delete-orphan')
+    expense_items = db.relationship('ExpenseItem', back_populates='monthly_expenses',
+                                    cascade='all, delete-orphan')
 
     # serialize rule
     serialize_rules = ['-user.monthly_expenses',
-                       '-household.monthly_expenses', '-expense_items.monthly_expenses']
+                       '-household.monthly_expenses',
+                       '-expense_items.monthly_expenses']
 
     def __repr__(self):
         return f'<Monthly Expenses {self.id}>'
