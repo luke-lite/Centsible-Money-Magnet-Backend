@@ -18,9 +18,11 @@ class Household(db.Model, SerializerMixin):
                             cascade='all, delete-orphan')
     monthly_expenses = db.relationship('MonthlyExpenses', back_populates='household',
                                        cascade='all, delete-orphan')
+    user = db.relationship('User', back_populates='household')
+
 
     # serialize rule
-    serialize_rules = ['-goals.household', '-monthly_expenses.household']
+    serialize_rules = ['-goals.household', '-monthly_expenses.household', '-user.household']
 
     def __repr__(self):
         return f'<Household {self.id}>'
@@ -38,16 +40,18 @@ class User(db.Model, SerializerMixin):
     household_id = db.Column(db.Integer, db.ForeignKey("household_table.id"))
 
     # relationships
+    household = db.relationship('Household', back_populates='user')
     bank = db.relationship('Bank', back_populates='user',
-                            cascade='all, delete-orphan')
+                           cascade='all, delete-orphan')
+
     goals = db.relationship('Goals', back_populates='user',
                             cascade='all, delete-orphan')
     monthly_expenses = db.relationship('MonthlyExpenses', back_populates='user',
                                        cascade='all, delete-orphan')
 
-
     # serialize rule
-    serialize_rules = ['-bank.user', '-goals.user', '-monthly_expenses.user']
+    serialize_rules = ['-bank.user', '-goals.user', '-monthly_expenses.user', '-household.user']
+
 
     @hybrid_property
     def password_hash(self):
@@ -64,6 +68,9 @@ class User(db.Model, SerializerMixin):
         return bcrypt.check_password_hash(
             self._password_hash, password.encode('utf-8'))
     
+    def __repr__(self):
+        return f'<User {self.id}>'
+
     def __repr__(self):
         return f'<User {self.id}>'
 
@@ -213,11 +220,13 @@ class ExpenseItem(db.Model, SerializerMixin):
     categories_id = db.Column(db.Integer, db.ForeignKey("categories_table.id"))
 
     # relationships
-    monthly_expenses = db.relationship('MonthlyExpenses', back_populates='expense_items')
+    monthly_expenses = db.relationship(
+        'MonthlyExpenses', back_populates='expense_items')
     categories = db.relationship('Categories', back_populates='expense_items')
 
     # serialize rule
-    serialize_rules = ['-monthly_expenses.expense_items', '-categories.expense_items']
+    serialize_rules = ['-monthly_expenses.expense_items',
+                       '-categories.expense_items']
 
     def __repr__(self):
         return f'<Expense Item {self.id}>'
