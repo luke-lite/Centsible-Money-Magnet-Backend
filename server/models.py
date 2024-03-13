@@ -136,7 +136,7 @@ class Categories(db.Model, SerializerMixin):
     categories_type = db.Column(db.Boolean, nullable=False)
 
     # relationships
-    transaction = db.relationship('Transactions', back_populates='categories',
+    transactions = db.relationship('Transactions', back_populates='categories',
                                   cascade='all, delete-orphan')
     expense_items = db.relationship('ExpenseItem', back_populates='categories',
                                     cascade='all, delete-orphan')
