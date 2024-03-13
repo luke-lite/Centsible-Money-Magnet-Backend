@@ -10,7 +10,6 @@ from models import Household, User, Bank, Transactions, Categories, Goals, Month
 class Login(Resource):
     def post(self):
         data = request.get_json()
-        print(data)
         name = data['name']
         password = data['password']
         if user := User.query.filter(User.name == name).first():
