@@ -20,6 +20,7 @@ class Household(db.Model, SerializerMixin):
                                        cascade='all, delete-orphan')
     user = db.relationship('User', back_populates='household')
 
+
     # serialize rule
     serialize_rules = ['-goals.household', '-monthly_expenses.household', '-user.household']
 
@@ -42,6 +43,7 @@ class User(db.Model, SerializerMixin):
     household = db.relationship('Household', back_populates='user')
     bank = db.relationship('Bank', back_populates='user',
                            cascade='all, delete-orphan')
+
     goals = db.relationship('Goals', back_populates='user',
                             cascade='all, delete-orphan')
     monthly_expenses = db.relationship('MonthlyExpenses', back_populates='user',
@@ -49,6 +51,7 @@ class User(db.Model, SerializerMixin):
 
     # serialize rule
     serialize_rules = ['-bank.user', '-goals.user', '-monthly_expenses.user', '-household.user']
+
 
     @hybrid_property
     def password_hash(self):
