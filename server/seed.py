@@ -10,6 +10,8 @@ from models import User
 
 if __name__ == '__main__':
     with app.app_context():
+        fake = Faker()
+
         print("Starting seed...")
 
         for _ in range(15):
