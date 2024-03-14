@@ -70,6 +70,9 @@ class User(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<User {self.id}>'
 
+# add secret key to the .env instead of this file.
+secret_key = Fernet.generate_key()
+cipher_suite = Fernet(secret_key)
 
 class Bank(db.Model, SerializerMixin):
     # using specific table names for now
@@ -78,12 +81,10 @@ class Bank(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     public_token = db.Column(db.String, nullable=False, unique=True)
     link_token = db.Column(db.String, nullable=False, unique=True)
-    persistent_token = db.Column(db.String, nullable=False, unique=True)
+    _persistent_token = db.Column(db.String, nullable=False, unique=True)
     bank_name = db.Column(db.String, nullable=False)
     account_type = db.Column(db.String, nullable=False)
 
-
-    
     # foreign keys
     user_id = db.Column(db.Integer, db.ForeignKey("users_table.id"))
 
@@ -96,6 +97,20 @@ class Bank(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<Bank {self.id}>'
+    
+    # function to return the persisten token, this will be added to the serializer
+    def show_token(self):
+        return cipher_suite.decrypt(self._persistent_token.encode()).decode()
+    
+    @property
+    def persistent_token(self):
+        return False
+        # return cipher_suite.decrypt(self._persistent_token.encode()).decode()
+
+    # Custom setter for persistent_token
+    @persistent_token.setter
+    def persistent_token(self, value):
+        self._persistent_token = cipher_suite.encrypt(value.encode()).decode()
 
 
 class Transactions(db.Model, SerializerMixin):
