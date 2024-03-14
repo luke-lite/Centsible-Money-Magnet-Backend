@@ -5,7 +5,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 
 from config import db, bcrypt
-
+from cryptography.fernet import Fernet
 
 class Household(db.Model, SerializerMixin):
     # using specific table names for now
@@ -21,7 +21,8 @@ class Household(db.Model, SerializerMixin):
     user = db.relationship('User', back_populates='household')
 
     # serialize rule
-    serialize_rules = ['-goals.household', '-monthly_expenses.household', '-user.household']
+    serialize_rules = ['-goals.household',
+                       '-monthly_expenses.household', '-user.household']
 
     def __repr__(self):
         return f'<Household {self.id}>'
@@ -48,7 +49,8 @@ class User(db.Model, SerializerMixin):
                                        cascade='all, delete-orphan')
 
     # serialize rule
-    serialize_rules = ['-bank.user', '-goals.user', '-monthly_expenses.user', '-household.user']
+    serialize_rules = ['-bank.user', '-goals.user',
+                       '-monthly_expenses.user', '-household.user']
 
     @hybrid_property
     def password_hash(self):
@@ -64,12 +66,6 @@ class User(db.Model, SerializerMixin):
     def authenticate(self, password):
         return bcrypt.check_password_hash(
             self._password_hash, password.encode('utf-8'))
-    
-    def __repr__(self):
-        return f'<User {self.id}>'
-
-    def __repr__(self):
-        return f'<User {self.id}>'
 
     def __repr__(self):
         return f'<User {self.id}>'
@@ -86,6 +82,8 @@ class Bank(db.Model, SerializerMixin):
     bank_name = db.Column(db.String, nullable=False)
     account_type = db.Column(db.String, nullable=False)
 
+
+    
     # foreign keys
     user_id = db.Column(db.Integer, db.ForeignKey("users_table.id"))
 
@@ -115,7 +113,6 @@ class Transactions(db.Model, SerializerMixin):
     bank = db.relationship('Bank', back_populates='transactions')
     categories = db.relationship('Categories', back_populates='transactions')
 
-
     # serialize rule
     serialize_rules = ['-bank.transactions', '-categories.transactions']
 
@@ -134,7 +131,7 @@ class Categories(db.Model, SerializerMixin):
 
     # relationships
     transactions = db.relationship('Transactions', back_populates='categories',
-                                  cascade='all, delete-orphan')
+                                   cascade='all, delete-orphan')
     expense_items = db.relationship('ExpenseItem', back_populates='categories',
                                     cascade='all, delete-orphan')
 
@@ -171,7 +168,7 @@ class Goals(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Goals {self.id}>'
 
-      
+
 class MonthlyExpenses(db.Model, SerializerMixin):
     # using specific table names for now
     __tablename__ = 'monthly_expenses_table'
