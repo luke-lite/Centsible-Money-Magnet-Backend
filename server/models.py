@@ -2,6 +2,7 @@ from sqlalchemy.orm import validates
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.hybrid import hybrid_property
+import datetime
 
 
 from config import db, bcrypt
@@ -12,6 +13,8 @@ class Household(db.Model, SerializerMixin):
     __tablename__ = 'household_table'
 
     id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String)
+    key_date = db.Column(db.DateTime, default=datetime.utcnow)
 
     # relationships
     goals = db.relationship('Goals', back_populates='household',
@@ -32,9 +35,13 @@ class User(db.Model, SerializerMixin):
     # using specific table names for now
     __tablename__ = 'users_table'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False, unique=True)
+    user_name = db.Column(db.String, nullable=False, unique=True)
     _password_hash = db.Column(db.String, nullable=False)
     admin = db.Column(db.Boolean)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False)
+    date_of_birth = db.Column(db.DateTime, nullable=False)
 
     # foreign keys
     household_id = db.Column(db.Integer, db.ForeignKey("household_table.id"))
