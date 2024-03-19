@@ -60,7 +60,7 @@ class User(db.Model, SerializerMixin):
                                        cascade='all, delete-orphan')
 
     # serialize rule
-    serialize_rules = ['-bank.user', '-goals.user', '-monthly_expenses.user', '-household.user']
+    serialize_rules = ['-bank.user', '-goals.user', '-monthly_expenses.user', '-household.user', '-OTPkey']
 
 
     @hybrid_property

@@ -12,6 +12,8 @@ class CreateSuperUser(Resource):
         try: 
             data = request.get_json()
             newHousehold = Household(name = data.get("household_name"), key = data.get("key"))
+            db.session.add(newHousehold)
+            db.session.commit()
             uri = two_factor.createNewURI(user_name = data.get("user_name"))
             newUser = User(user_name = data.get("user_name"), 
                            admin = True,
@@ -24,10 +26,9 @@ class CreateSuperUser(Resource):
                            )
             newUser.password_hash = data.get("password_hash")
 
-            db.session.add(newHousehold)
             db.session.add(newUser)
             db.session.commit()
-            return newUser.to_dict()
+            return uri[1], newUser.to_dict()
         except Exception as e:
             print(e)
             return {'error': 'Account not Created'}, 402
@@ -71,35 +72,23 @@ api.add_resource(CreateUser, '/create_user')
 class Login(Resource):
     def post(self):
         data = request.get_json()
-        name = data['name']
+        name = data['user_name']
         password = data['password']
-        if user := User.query.filter(User.name == name).first():
-            if user.authenticate(password):
+        otpCode = data['otpCode']
+        if user := User.query.filter(User.user_name == name).first():
+            if user.authenticate(password) and two_factor.authenticateUser(OTPkey = user.OTPkey, OTPcode = otpCode):
                 session['user_id'] = user.id
-                session['two-factor'] = False
                 return user.to_dict(rules = ["-uri"]), 200
         return {'error': 'Unauthorized'}, 401
 
 
 api.add_resource(Login, '/login')
 
-class TwoFactor(Resource):
-    def post(self):
-        data = request.get_json()
-        user = User.query.filter(User.id == session.get('user_id')).first()
-
-        if two_factor.authenticateUser(OTPkey = user.OPTkey, OTPcode = data.get("otpCode")):
-            session['two-factor'] = True
-            return user.to_dict(rules = ["-uri"]), 200
-        
-        return {'error': 'Unauthorized'}, 401
-
-api.add_resource(TwoFactor, '/two_factor')
-
 # check session
 class CheckSession(Resource):
     def get(self):
-        if user := User.query.filter(User.id == session.get('user_id')).first() and session.get('two-factor'):
+        if user := User.query.filter(User.id == session.get('user_id')).first():
+            print(user)
             return user.to_dict(rules = ["-uri"])
         else:
             return {'message': '401: Not Authorized'}, 401
