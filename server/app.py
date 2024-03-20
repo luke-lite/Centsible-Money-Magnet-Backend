@@ -1,11 +1,13 @@
 from flask import request, session
 from flask_restful import Resource
 import two_factor
+from datetime import datetime
+
 
 # Local imports
 from config import app, db, api
 
-from models import Household, User, Bank, Transactions, Categories, Goals, MonthlyExpenses, ExpenseItem
+from models import Household, User, Bank, Transactions, Categories, Goals, MonthlyExpenses, ExpenseItem, LoginAttempts
 
 class CreateSuperUser(Resource):
     def post(self):
@@ -71,6 +73,15 @@ api.add_resource(CreateUser, '/create_user')
 
 class Login(Resource):
     def post(self):
+
+        #logic for login attempts (max 5 attempts per every 3 hours)
+        time_of_attempt = datetime.now()
+        attempts = LoginAttempts.query.filter(LoginAttempts.ip_address == request.remote_addr, 
+                                              LoginAttempts.attempt_date == time_of_attempt.date(),
+                                              LoginAttempts.attempt_time >= (time_of_attempt.time().hour - 3)).all()
+        if len(attempts) >= 4:
+            return {'error': 'Too Many Attempts'}, 401
+
         data = request.get_json()
         name = data['user_name']
         password = data['password']
@@ -78,7 +89,13 @@ class Login(Resource):
         if user := User.query.filter(User.user_name == name).first():
             if user.authenticate(password) and two_factor.authenticateUser(OTPkey = user.OTPkey, OTPcode = otpCode):
                 session['user_id'] = user.id
-                return user.to_dict(rules = ["-uri"]), 200
+                newLogin = LoginAttempts(ip_address = request.remote_addr, success = True)
+                db.session.add(newLogin)
+                db.session.commit()
+                return user.to_dict(), 200
+        newLogin = LoginAttempts(ip_address = request.remote_addr, success = False)
+        db.session.add(newLogin)
+        db.session.commit()
         return {'error': 'Unauthorized'}, 401
 
 

@@ -1,4 +1,5 @@
 import pyotp
+from datetime import datetime
 
 def createNewURI(user_name):
     key = pyotp.random_base32()
@@ -10,3 +11,7 @@ def authenticateUser(OTPkey, OTPcode):
     totp = pyotp.TOTP(OTPkey)
     return totp.verify(OTPcode)
 
+
+print(datetime.today().date())
+
+# print(datetime.now().time().hour)
