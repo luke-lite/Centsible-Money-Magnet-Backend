@@ -16,6 +16,7 @@ Werkzeug= "2.2.2"
 flask-cors = "*"
 flask-bcrypt = "*"
 faker = "*"
+pyotp = "*"
 
 [dev-packages]
 

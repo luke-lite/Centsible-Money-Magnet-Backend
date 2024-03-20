@@ -2,8 +2,7 @@ from sqlalchemy.orm import validates
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.hybrid import hybrid_property
-from datetime import date
-
+from datetime import datetime
 
 
 from config import db, bcrypt
@@ -16,7 +15,7 @@ class Household(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     key = db.Column(db.String, nullable=False)
-    key_date = db.Column(db.DateTime, default=date.today())
+    key_date = db.Column(db.DateTime, default=datetime.now())
 
     # relationships
     goals = db.relationship('Goals', back_populates='household',
@@ -60,7 +59,7 @@ class User(db.Model, SerializerMixin):
                                        cascade='all, delete-orphan')
 
     # serialize rule
-    serialize_rules = ['-bank.user', '-goals.user', '-monthly_expenses.user', '-household.user']
+    serialize_rules = ['-bank.user', '-goals.user', '-monthly_expenses.user', '-household.user', '-OTPkey']
 
 
     @hybrid_property
@@ -82,12 +81,18 @@ class User(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<User {self.id}>'
 
-    def __repr__(self):
-        return f'<User {self.id}>'
+class LoginAttempts(db.Model, SerializerMixin):
+    # using specific table names for now
+    __tablename__ = 'loggin_attempts_table'
+
+    id = db.Column(db.Integer, primary_key=True)
+    ip_address = db.Column(db.String, nullable=False)
+    success = db.Column(db.Boolean, nullable=False)
+    attempt_date = db.Column(db.String, nullable=False, default=datetime.today().date())
+    attempt_time = db.Column(db.Integer, nullable=False, default=datetime.now().time().hour)
 
     def __repr__(self):
-        return f'<User {self.id}>'
-
+        return f'<Login Attempts {self.id}>'
 
 class Bank(db.Model, SerializerMixin):
     # using specific table names for now
