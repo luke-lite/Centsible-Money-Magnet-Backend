@@ -3,6 +3,7 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import datetime
+import random 
 
 
 from config import db, bcrypt
@@ -52,14 +53,14 @@ class User(db.Model, SerializerMixin):
     household = db.relationship('Household', back_populates='user')
     bank = db.relationship('Bank', back_populates='user',
                            cascade='all, delete-orphan')
-
     goals = db.relationship('Goals', back_populates='user',
                             cascade='all, delete-orphan')
     monthly_expenses = db.relationship('MonthlyExpenses', back_populates='user',
                                        cascade='all, delete-orphan')
+    backup_codes = db.relationship('Backup_Codes', back_populates='user', cascade='all, delete-orphan')
 
     # serialize rule
-    serialize_rules = ['-bank.user', '-goals.user', '-monthly_expenses.user', '-household.user', '-OTPkey']
+    serialize_rules = ['-bank.user', '-goals.user', '-monthly_expenses.user', '-household.user', '-OTPkey', 'backup_codes']
 
 
     @hybrid_property
@@ -80,6 +81,26 @@ class User(db.Model, SerializerMixin):
     
     def __repr__(self):
         return f'<User {self.id}>'
+    
+class Backup_Codes(db.Model, SerializerMixin):
+    # using specific table names for now
+    __tablename__ = 'backup_codes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    backup_code = db.Column(db.Integer, nullable=False, default=random.randint(1, 1000000000))
+    used = db.Column(db.Boolean, nullable=False, default=False)
+
+     # foreign keys
+    user_id = db.Column(db.Integer, db.ForeignKey("users_table.id"))
+
+    # relationships
+    user = db.relationship('User', back_populates='backup_codes')
+
+    # serialize rule
+    serialize_rules = ['-user', '-id', '-used']
+
+    def __repr__(self):
+        return f'<Backup Code {self.id}>'
 
 class LoginAttempts(db.Model, SerializerMixin):
     # using specific table names for now
