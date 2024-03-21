@@ -7,6 +7,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from config import db, bcrypt
 from cryptography.fernet import Fernet
 
+
 class Household(db.Model, SerializerMixin):
     # using specific table names for now
     __tablename__ = 'household_table'
@@ -70,9 +71,11 @@ class User(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<User {self.id}>'
 
+
 # add secret key to the .env instead of this file.
 secret_key = Fernet.generate_key()
 cipher_suite = Fernet(secret_key)
+
 
 class Bank(db.Model, SerializerMixin):
     # using specific table names for now
@@ -97,11 +100,11 @@ class Bank(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<Bank {self.id}>'
-    
+
     # function to return the persisten token, this will be added to the serializer
     def show_token(self):
         return cipher_suite.decrypt(self._persistent_token.encode()).decode()
-    
+
     @property
     def persistent_token(self):
         return False

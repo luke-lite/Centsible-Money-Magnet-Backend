@@ -7,6 +7,7 @@ from config import app, db, api
 from models import Household, User, Bank, Transactions, Categories, Goals, MonthlyExpenses, ExpenseItem
 
 
+
 class Login(Resource):
     def post(self):
         data = request.get_json()
