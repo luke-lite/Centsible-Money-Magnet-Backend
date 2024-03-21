@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: cbfcee4f71a6
+Revision ID: f31f9c35a50b
 Revises: 
-Create Date: 2024-03-19 23:06:40.878937
+Create Date: 2024-03-20 16:44:48.563921
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'cbfcee4f71a6'
+revision = 'f31f9c35a50b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -36,8 +36,8 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('ip_address', sa.String(), nullable=False),
     sa.Column('success', sa.Boolean(), nullable=False),
-    sa.Column('attempt_date', sa.DateTime(), nullable=False),
-    sa.Column('attempt_time', sa.DateTime(), nullable=False),
+    sa.Column('attempt_date', sa.String(), nullable=False),
+    sa.Column('attempt_time', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_loggin_attempts_table'))
     )
     op.create_table('users_table',
@@ -54,6 +54,14 @@ def upgrade():
     sa.ForeignKeyConstraint(['household_id'], ['household_table.id'], name=op.f('fk_users_table_household_id_household_table')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_users_table')),
     sa.UniqueConstraint('user_name', name=op.f('uq_users_table_user_name'))
+    )
+    op.create_table('backup_codes',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('backup_code', sa.Integer(), nullable=False),
+    sa.Column('used', sa.Boolean(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users_table.id'], name=op.f('fk_backup_codes_user_id_users_table')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_backup_codes'))
     )
     op.create_table('bank_table',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -126,6 +134,7 @@ def downgrade():
     op.drop_table('monthly_expenses_table')
     op.drop_table('goals_table')
     op.drop_table('bank_table')
+    op.drop_table('backup_codes')
     op.drop_table('users_table')
     op.drop_table('loggin_attempts_table')
     op.drop_table('household_table')
