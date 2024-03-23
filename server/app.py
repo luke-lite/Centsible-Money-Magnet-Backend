@@ -40,13 +40,13 @@ PLAID_REDIRECT_URI = empty_to_none('PLAID_REDIRECT_URI')
 # solution: /Applications/Python*/Install\ Certificates.command
 
 # env_vars = dotenv_values(".env")
-# secret_token = os.getenv('PLAID_SECRET')
-# access_id = os.getenv('PLAID_CLIENT_ID')
+secret_token = os.getenv('PLAID_SECRET')
+access_id = os.getenv('PLAID_CLIENT_ID')
 configuration = plaid.Configuration(
     host=plaid.Environment.Sandbox,
     api_key={
-        'clientId': '65fc8012a82f5b001ba2e712',
-        'secret': 'ba89b358656576db05fec697fb0c39',
+        'clientId': 'access_id',
+        'secret': 'secret_token',
     }
 )
 
@@ -68,6 +68,9 @@ item_id = None
 class PlaidCreateLinkToken(Resource):
     def post(self):  # sourcery skip: extract-method
         global link_token
+        global secret_token
+        global access_id
+        print(secret_token, access_id)
         print(client)
         try:
             request = LinkTokenCreateRequest(
