@@ -1,24 +1,12 @@
 import pyotp
-import qrcode
 
-def createNewURI(username):
+
+def createNewURI(user_name):
     key = pyotp.random_base32()
 
-    return pyotp.totp.TOTP(key).provisioning_uri(
-        name=username, issuer_name="Money Magnet"
-    )
+    uri = pyotp.totp.TOTP(key).provisioning_uri(name = user_name, issuer_name="Money Magnet")
+    return key, uri
 
-def authenticateUser(OPTkey, OTPcode):
-    totp = pyotp.TOTP(key)
-    totp.verify()
-
-
-key = "testetststasdkatfdyta"
-
-# uri = pyotp.totp.TOTP(key).provisioning_uri(name = "test", issuer_name="Money Magnet")
-# qrcode.make(uri).save("totp.png")
-
-totp = pyotp.TOTP(key)
-
-while True:
-    print(totp.verify(input("Enter")))
+def authenticateUser(OTPkey, OTPcode):
+    totp = pyotp.TOTP(OTPkey)
+    return totp.verify(OTPcode)

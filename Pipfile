@@ -20,6 +20,7 @@ cryptography = "*"
 plaid-python = "*"
 requests = "*"
 python-dotenv = "*"
+pyotp = "*"
 
 [dev-packages]
 
