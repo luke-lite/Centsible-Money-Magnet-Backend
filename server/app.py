@@ -45,8 +45,8 @@ access_id = os.getenv('PLAID_CLIENT_ID')
 configuration = plaid.Configuration(
     host=plaid.Environment.Sandbox,
     api_key={
-        'clientId': 'access_id',
-        'secret': 'secret_token',
+        'clientId': access_id,
+        'secret': secret_token,
     }
 )
 
@@ -71,7 +71,7 @@ class PlaidCreateLinkToken(Resource):
         global secret_token
         global access_id
         print(secret_token, access_id)
-        print(client)
+        # print(client)
         try:
             request = LinkTokenCreateRequest(
                 products=products,
@@ -101,6 +101,7 @@ class PlaidCreateLinkToken(Resource):
             return {'link_token': response['link_token']}
         except plaid.ApiException as e:
             print({'inside exception': e})
+            return {'error': 'error'}, 500
 
 
 api.add_resource(PlaidCreateLinkToken, '/getlinktoken')
